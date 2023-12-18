@@ -1,0 +1,79 @@
+# Deployment for wordpress with nginx
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { .Values.app.name } }
+  namespace: { { .Values.namespace } }
+  labels:
+    app: { { .Values.app.name } }
+    env: { { .Values.app.environment } }
+    owner: { { .Values.app.owner } }
+spec:
+  selector:
+    matchLabels:
+      app: { { .Values.app.name } }
+  replicas: { { .Values.replicaCount } }
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+    creationTimestamp: { { .Values.containers.creationTimestamp } }
+    labels:
+      app: { { .Values.app.name } }
+      env: { { .Values.app.environment } }
+    spec:
+      containers:
+        - name: { { .Values.containers.name } }
+          image: { { .Values.containers.image } }
+          imagePullPolicy: { { .Values.containers.imagePullPolicy } }
+          securityContext: { {  - toYaml .Values.securityContext | nindent 12 } }
+          env:
+            - name: WORDPRESS_DB_HOST
+              value: {{ .Values.database.host }}
+            - name: WORDPRESS_DB_NAME
+              value: {{ .Values.database.database }}
+            - name: WORDPRESS_DB_USER
+              value:  {{ .Values.database.user }}
+            - name: WORDPRESS_DB_PASSWORD_FILE
+              value: "/run/secrets/wordpress/db_password"
+            - name: WORDPRESS_TABLE_PREFIX
+              value: {{ .Values.database.table_prefix }}
+            - name: WORDPRESS_CONFIG_EXTRA
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.app.name } }-config
+                  key: env-wp-config-extra
+            - name: WORDPRESS_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: { { .Values.app.name } }-config
+                  key: env-wp-debug
+                  optional: true
+
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            tcpSocket:
+              port: php-fpm
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            tcpSocket:
+              port: php-fpm
+          {{- end }}
+          ports:
+            - name: php-fpm
+              containerPort: 9000
+              protocol: TCP

@@ -1,0 +1,99 @@
+replicaCount: 4
+
+namespace: monitoring
+
+app:
+  name: wordpress-stack
+  environment: dev
+  owner: Brian-Vo
+
+containers:
+  creationTimestamp: null
+  imagePullPolicy: Always
+  name: wordpress
+  image: wordpress:php8.3-fpm
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 12000
+
+database:
+  host: database.default.svc.cluster.local:3306
+  database: db_wordpress
+  user: db_wordpress
+  password: "password"
+  table_prefix: wp_
+
+wordpress:
+  ## extra config to be added to wp-config.php
+  ##  see: https://wordpress.org/support/article/editing-wp-config-php/
+  config_extra: |-
+    #### general settings
+    define('WP_CACHE', true );
+    define('DISALLOW_FILE_EDIT', true );
+    define('MEDIA_TRASH', true );
+    define('WP_POST_REVISIONS', '10' );
+    
+    #### memory limits
+    # define('WP_MEMORY_LIMIT', '40' );       # default
+    # define('WP_MAX_MEMORY_LIMIT', '256' );  # default
+    
+    #### network, multi-site settings
+    # define('MULTISITE', true);
+    # define('SUBDOMAIN_INSTALL', true);
+    # define('DOMAIN_CURRENT_SITE', 'example.com');
+    # define('PATH_CURRENT_SITE', '/');
+    # define('SITE_ID_CURRENT_SITE', 1);
+    # define('BLOG_ID_CURRENT_SITE', 1);
+    # start: fixes for cookies issues with multiple domains
+    # define( 'COOKIE_DOMAIN', '' );
+    # define( 'ADMIN_COOKIE_PATH', '/' );
+    # define( 'COOKIEPATH', '/' );
+    # define( 'SITECOOKIEPATH', '/' );
+    # start: in case of cookies issues with multiple domains this could be helpful:
+    #   https://wordpress.stackexchange.com/questions/259839/cookies-in-multisite-where-network-sites-have-their-own-domain-name
+    #   https://docs.bitnami.com/installer/apps/wordpress-multisite/configuration/configure-wordpress-multisite/#troubleshooting-129
+    # end:   fixes for cookies issues with multiple domains
+  
+  
+  ## Enable persistence using Persistent Volume Claims
+  ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+  ##
+  persistence:
+    enabled: true
+    ## wordpress data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    ##
+    ## If you want to reuse an existing claim, you can pass the name of the PVC using
+    ## the existingClaim variable
+    # existingClaim: your-claim
+    accessMode: ReadWriteOnce
+    size: 10Gi
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
