@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: { { .Values.app.name } }
-  namespace: { { .Values.namespace } }
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: { { .Values.app.name } }
-    env: { { .Values.app.environment } }
-    owner: { { .Values.app.owner } }
+    app: {{ .Values.app.name }}
+    env: {{ .Values.app.environment }}
+    owner: {{ .Values.app.owner }}
 spec:
   selector:
     matchLabels:
-      app: { { .Values.app.name } }
-  replicas: { { .Values.replicaCount } }
+      app: {{ .Values.app.name }}
+  replicas: {{ .Values.replicaCount }}
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -20,16 +20,16 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-    creationTimestamp: { { .Values.containers.creationTimestamp } }
+    creationTimestamp: {{ .Values.containers.creationTimestamp }}
     labels:
-      app: { { .Values.app.name } }
-      env: { { .Values.app.environment } }
+      app: {{ .Values.app.name }}
+      env: {{ .Values.app.environment }}
     spec:
       containers:
-        - name: { { .Values.containers.name } }
-          image: { { .Values.containers.image } }
-          imagePullPolicy: { { .Values.containers.imagePullPolicy } }
-          securityContext: { {  - toYaml .Values.securityContext | nindent 12 } }
+        - name: {{ .Values.containers.name }}
+          image: {{ .Values.containers.image }}
+          imagePullPolicy: {{ .Values.containers.imagePullPolicy }}
+          securityContext: {{  - toYaml .Values.securityContext | nindent 12 }}
           env:
             - name: WORDPRESS_DB_HOST
               value: {{ .Values.database.host }}
@@ -44,12 +44,12 @@ spec:
             - name: WORDPRESS_CONFIG_EXTRA
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.app.name } }-config
+                  name: {{ .Values.app.name }}-config
                   key: env-wp-config-extra
             - name: WORDPRESS_DEBUG
               valueFrom:
                 configMapKeyRef:
-                  name: { { .Values.app.name } }-config
+                  name: {{ .Values.app.name }}-config
                   key: env-wp-debug
                   optional: true
 
