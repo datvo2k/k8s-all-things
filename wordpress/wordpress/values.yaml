@@ -97,3 +97,11 @@ readinessProbe:
   timeoutSeconds: 5
   failureThreshold: 6
   successThreshold: 1
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
