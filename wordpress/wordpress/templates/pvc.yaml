@@ -1,0 +1,17 @@
+{{- if and .Values.wordpress.persistence.enabled (not .Values.wordpress.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.app.name }}
+  labels:
+    app: {{ .Values.app.name }}
+    env: {{ .Values.app.environment }}
+    owner: {{ .Values.app.owner }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.wordpress.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.wordpress.persistence.size | quote }}
+{{- end }}

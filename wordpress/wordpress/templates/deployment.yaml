@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.app.name }}
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.app.name }}
     env: {{ .Values.app.environment }}
@@ -153,16 +152,16 @@ spec:
           emptyDir:
         - name: wordpress-config
           configMap:
-            name: {{ include "wordpress.fullname" . }}-config
+            name: {{ .Values.app.name }}-config
         - name: wordpress-data
           persistentVolumeClaim:
-            claimName: {{ include "wordpress.fullname" . }}-data
+            claimName: {{ .Values.app.name }}-data
         - name: nginx-tmp
           emptyDir:
             medium: Memory
         - name: wordpress-code
           configMap:
-            name: {{ include "wordpress.fullname" . }}-code
+            name: {{ .Values.app.name }}-code
             defaultMode: 0755
       {{- with .Values.nodeSelector }}
       nodeSelector:
