@@ -28,7 +28,7 @@ spec:
         - name: {{ .Values.containers.name }}
           image: {{ .Values.containers.image }}
           imagePullPolicy: {{ .Values.containers.imagePullPolicy }}
-          securityContext: {{  - toYaml .Values.securityContext | nindent 12 }}
+          securityContext: {{  - toYaml .Values.podSecurityContext | nindent 12 }}
           env:
             - name: WORDPRESS_DB_HOST
               value: {{ .Values.database.host }}
@@ -104,7 +104,6 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
         - name: nginx
           image: "{{ .Values.imageWeb.repository }}:{{ .Values.imageWeb.tag | default "alpine" }}"
-          #command: [nginx-debug, '-g', 'daemon off;']
           imagePullPolicy: "IfNotPresent"
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
