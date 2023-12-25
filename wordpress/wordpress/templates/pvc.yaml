@@ -14,4 +14,3 @@ spec:
   resources:
     requests:
       storage: {{ .Values.wordpress.persistence.size | quote }}
-{{- end }}

@@ -3,9 +3,6 @@
 #   range will map the values of the current ingress definition to "."
 #   Furthermore "." has to be changed to "$" when using include "something"
 apiVersion: networking.k8s.io/v1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
   name: {{ .Values.app.name }}
@@ -13,38 +10,20 @@ metadata:
     app: {{ .Values.app.name }}
     env: {{ .Values.app.environment }}
     owner: {{ .Values.app.owner }}
-  {{- with .annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- toYaml .Values.ingress.annotations | nindent 12 }}
 spec:
-  {{- if .tls }}
   tls:
-    {{- range .tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
+  {{- toYaml .Values.ingress.tls | nindent 12 }}
   rules:
-    {{- range .hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ . }}
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.app.name }}
-                port:
-                  number: {{ $svcPort }}
-              {{- else }}
-                serviceName: {{ $fullName }}
-                servicePort: {{ $svcPort }}
-              {{- end }}
-          {{- end }}
-    {{- end }}
-  {{- end }}
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.ingress.paths }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.app.name }}
+            port:
+              number: {{ .Values.ingress.port }}
+  ingressClassName: nginx  

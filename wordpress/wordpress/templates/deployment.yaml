@@ -28,7 +28,7 @@ spec:
         - name: {{ .Values.containers.name }}
           image: {{ .Values.containers.image }}
           imagePullPolicy: {{ .Values.containers.imagePullPolicy }}
-          securityContext: {{  - toYaml .Values.podSecurityContext | nindent 12 }}
+          securityContext: {{ toYaml .Values.podSecurityContext | nindent 12 }}
           env:
             - name: WORDPRESS_DB_HOST
               value: {{ .Values.database.host }}
