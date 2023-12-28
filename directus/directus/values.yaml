@@ -43,29 +43,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-redis:
-  enabled: true
-  ## @section Global parameters
-  ## Global Docker image parameters
-  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
-  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
-
-  ## @param global.imageRegistry Global Docker image registry
-  ## @param global.imagePullSecrets Global Docker registry secret names as an array
-  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
-  ## @param global.redis.password Global Redis(TM) password (overrides `auth.password`)
-  ##
-  global:
-    imageRegistry:
-    ## E.g.
-    ## imagePullSecrets:
-    ##   - myRegistryKeySecretName
-    ##
-    imagePullSecrets: []
-    storageClass:
-    redis:
-      password:
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
