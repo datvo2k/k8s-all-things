@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount: 4
 
 ## Directus image
 ## ref: https://hub.docker.com/r/directus/directus/tags/
@@ -42,6 +42,29 @@ postgresql:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+redis:
+  enabled: true
+  ## @section Global parameters
+  ## Global Docker image parameters
+  ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+  ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+  ## @param global.imageRegistry Global Docker image registry
+  ## @param global.imagePullSecrets Global Docker registry secret names as an array
+  ## @param global.storageClass Global StorageClass for Persistent Volume(s)
+  ## @param global.redis.password Global Redis(TM) password (overrides `auth.password`)
+  ##
+  global:
+    imageRegistry:
+    ## E.g.
+    ## imagePullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    imagePullSecrets: []
+    storageClass:
+    redis:
+      password:
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -130,7 +153,7 @@ extraEnvVars:
 service:
   ## @param service.type Directus service type
   ##
-  type: LoadBalancer
+  type: ClusterIP
   ## @param service.port Directus service HTTP port
   ##
   port: 80
