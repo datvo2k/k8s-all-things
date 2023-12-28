@@ -60,3 +60,58 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Return  the proper Storage Class
+*/}}
+{{- define "directus.storageClass" -}}
+{{/*
+Helm 2.11 supports the assignment of a value to a variable defined in a different scope,
+but Helm 2.9 and 2.10 does not support it, so we need to implement this if-else logic.
+*/}}
+{{- if .Values.global -}}
+    {{- if .Values.global.storageClass -}}
+        {{- if (eq "-" .Values.global.storageClass) -}}
+            {{- printf "storageClassName: \"\"" -}}
+        {{- else }}
+            {{- printf "storageClassName: %s" .Values.global.storageClass -}}
+        {{- end -}}
+    {{- else -}}
+        {{- if .Values.persistence.storageClass -}}
+              {{- if (eq "-" .Values.persistence.storageClass) -}}
+                  {{- printf "storageClassName: \"\"" -}}
+              {{- else }}
+                  {{- printf "storageClassName: %s" .Values.persistence.storageClass -}}
+              {{- end }}
+        {{- end -}}
+    {{- end }}
+{{- else -}}
+    {{- if .Values.persistence.storageClass -}}
+        {{- if (eq "-" .Values.persistence.storageClass) -}}
+            {{- printf "storageClassName: \"\"" -}}
+        {{- else }}
+            {{- printf "storageClassName: %s" .Values.persistence.storageClass -}}
+        {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Get the database service's host
+*/}}
+{{- define "directus.databaseService" -}}
+{{- printf "%s-%s.%s.svc.%s" .Chart.Name .Values.databaseServiceSuffix .Release.Namespace .Values.databaseCluster }}
+{{- end }}
+
+{{/*
+Renders a value that contains template.
+Usage:
+{{ include "directus.render" ( dict "value" .Values.path.to.the.Value "context" $) }}
+*/}}
+{{- define "directus.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}
