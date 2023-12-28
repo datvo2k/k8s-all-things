@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 4
+replicaCount: 1
 
 ## Directus image
 ## ref: https://hub.docker.com/r/directus/directus/tags/
@@ -184,9 +184,9 @@ resources:
 autoscaling:
   enabled: true
   minReplicas: 1
-  maxReplicas: 11
-  targetCPU: 50
-  targetMemory: 50
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  # targetMemoryUtilizationPercentage: 50
 
 ## Persistence Parameters
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
