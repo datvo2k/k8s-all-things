@@ -18,3 +18,14 @@ spec:
       maxUnavailable: {{ .Values.strategy.maxUnavailable }}
     type: {{ .Values.strategy.type }}
   {{- end -}}
+  imagePullSecrets:
+    {{- toYaml . | nindent 8 }}
+  serviceAccountName: {{ .Values.app.name }}
+  securityContext:
+    {{- toYaml .Values.podSecurityContext | nindent 8 }}
+  containers:
+    - name: {{ .Values.app.name }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+      imagePullPolicy: {{ .Values.image.pullPolicy }}
