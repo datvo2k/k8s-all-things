@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "directus-stack.fullname" . }}
+  name: {{ include "directus.fullname" . }}
   labels:
-    {{- include "directus-stack.labels" . | nindent 4 }}
+    {{- include "directus.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "directus-stack.fullname" . }}
+    name: {{ include "directus.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
