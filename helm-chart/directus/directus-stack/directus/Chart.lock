@@ -5,8 +5,11 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 18.6.1
+- name: mysql
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.16.1
 - name: common
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 2.14.1
-digest: sha256:59f547944f3198421707aeac3da577707448741713db6833fb216168b4f99925
-generated: "2024-01-01T14:47:35.549980412+07:00"
+digest: sha256:cc9b3d7bf17bef1f51ee44f80400a2db09789277bfaa154ce678a641a052a29d
+generated: "2024-01-02T22:16:04.164219105+07:00"
