@@ -79,7 +79,7 @@ extraEnvVars:
   - name: DB_DATABASE
     value: "directus"
   - name: DB_HOST
-    value: "mysql.local"
+    value: "directus-mysql-0.directus.svc.mysql.local"
   - name: DB_PORT
     value: "3306"
   - name: DB_USER
@@ -100,13 +100,13 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1Gi
   requests:
     cpu: 200m
-    memory: 256Mi
+    memory: 512Mi
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
@@ -1052,7 +1052,7 @@ redis:
   image:
     registry: docker.io
     repository: bitnami/redis
-    tag: 6.2.14-debian-11-r2
+    tag: 6.2.13
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1415,7 +1415,7 @@ redis:
   replica:
     ## @param replica.replicaCount Number of Redis(TM) replicas to deploy
     ##
-    replicaCount: 3
+    replicaCount: 1
     ## @param replica.configuration Configuration for Redis(TM) replicas nodes
     ## ref: https://redis.io/topics/config
     ##
@@ -1895,7 +1895,7 @@ redis:
   networkPolicy:
     ## @param networkPolicy.enabled Enable creation of NetworkPolicy resources
     ##
-    enabled: false
+    enabled: true
     ## @param networkPolicy.allowExternal Don't require client label for connections
     ## When set to false, only pods with the correct client label will have network access to the ports
     ## Redis(TM) is listening on. When true, Redis(TM) will accept connections from any source
@@ -2405,7 +2405,7 @@ mysql:
   diagnosticMode:
     ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
     ##
-    enabled: false
+    enabled: true
     ## @param diagnosticMode.command Command to override all containers in the deployment
     ##
     command:
