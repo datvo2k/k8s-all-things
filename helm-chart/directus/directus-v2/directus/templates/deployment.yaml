@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "directus.fullname" . }}
+  labels:
+    {{- include "directus.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "directus.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "directus.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "directus.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: KEY
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_KEY
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_SECRET
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_DATABASE_HOST
+            - name: DB_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: directus-env-configmap
+                  key: DIRECTUS_DATABASE_CLIENT
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_DATABASE_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_DATABASE_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_DATABASE_PASSWORD
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: directus-env-configmap
+                  key: DIRECTUS_DATABASE_PORT
+            - name: ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: ADMIN_EMAIL
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: ADMIN_PASSWORD
+            - name: REDIS
+              valueFrom:
+                secretKeyRef:
+                  name: directus-env-secrets
+                  key: DIRECTUS_REDIS_HOST
+            - name: DIRECTUS_INSTALL_TITLE
+              valueFrom:
+                configMapKeyRef:
+                  name: directus-env-configmap
+                  key: DIRECTUS_INSTALL_TITLE
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
