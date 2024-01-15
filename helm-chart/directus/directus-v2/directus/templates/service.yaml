@@ -8,7 +8,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.ports.port }}
       targetPort: {{ .Values.service.ports.targetPort }}
       protocol: {{ .Values.service.ports.protocol }}
       nodePort: {{ .Values.service.ports.nodePort }}

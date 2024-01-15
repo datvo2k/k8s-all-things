@@ -109,8 +109,8 @@ env:
   directusSecret: 577ff8ab-12ef-44dc-baec-098240acbd4e
   directusEmail: admin@admin.com
   directusPassword: "123456"
-  directusDatabaseClient: CockroachDB
-  directusDatabaseHost: cockroachdb.database.svc.cluster.local
+  directusDatabaseClient: cockroachdb
+  directusDatabaseHost: cockroach-cockroachdb-public.database.svc.cluster.local
   directusDatabasePort: "26257"
   directusDatabaseName: directus
   directusDatabaseUsername: directus

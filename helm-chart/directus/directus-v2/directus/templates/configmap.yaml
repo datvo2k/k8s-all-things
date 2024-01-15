@@ -7,4 +7,4 @@ metadata:
 data:
   DIRECTUS_INSTALL_TITLE: {{ .Values.env.directusTitle | quote }}
   DIRECTUS_DATABASE_CLIENT: {{ .Values.env.directusDatabaseClient | quote }}
-  DIRECTUS_DATABASE_PORT: {{ .Values.directusDatabasePort | quote }}
+  DIRECTUS_DATABASE_PORT: {{ .Values.env.directusDatabasePort | quote }}
